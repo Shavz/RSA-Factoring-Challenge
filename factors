@@ -1,61 +1,25 @@
-#!/usr/bin/python3
-from random import randint
+#!/usr/bin/env python3
 
 
-def gcd(a, b):
-    while b:
-        a, b = b, a % b
-    return a
+from  __future__  import  division
+import sys
+import os
 
 
-def _pollard_brent(c, n, x):
-    y = (x ** 2) % n + c
-    if y >= n:
-        y -= n
+def func_factors(filename):
+    with open(filename, 'r') as f:
+        for line in f:
+            num = int(line)
+            resul = factors(num)
+            print ("{}={}*{}".format(num, int(num / resul), resul))
+    f.closed
 
-    assert 0 <= y < n
-    return y
+def factors(x):
+    for y in range(1, x + 1):
+        if x % y == 0 and y is not 1:
+            return y
 
-
-def factorise_b(n, iterations=None):
-    y, c, m = (randint(1, n - 1) for w in range(3))
-    r, q, g = 1, 1, 1
-    i = 0
-    while g == 1:
-        x = y
-        for w in range(r):
-            y = _pollard_brent(c, n, y)
-        k = 0
-        while k < r and g == 1:
-            ys = y
-            for _ in range(min(m, r - k)):
-                y = _pollard_brent(c, n, y)
-                q = (q * abs(x - y)) %  n
-            g = gcd(q, n)
-            k += m
-        r *= 2
-        if iterations:
-            i += 1
-            if i == iterations:
-                return None
-
-    if g == n:
-        while True:
-            ys = _pollard_brent(c, n, ys)
-            g = gcd(abs(x - ys), n)
-            if g > 1:
-                break
-    return g
-
-
-if __name__ == '__main__':
-    from sys import argv
-
-    if len(argv) != 2:
-        exit(1)
-
-    with open(argv[1], "r") as f:
-        for i in f:
-            n = int(i[:-1])
-            res = factorise_b(n)
-            print("{}={}*{}".format(n, n // res, res))
+if __name__ == "__main__":
+    if (len(sys.argv) is not 2):
+        raise SyntaxError("[BAD-USAGE]: Expected only one argument")
+    func_factors(sys.argv[1])
